@@ -1,13 +1,18 @@
 import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import { readFileSync } from 'fs';
+import { avocadoResolvers } from './graphql/resolvers/avocado.resolvers';
+import { usersResolvers } from './graphql/resolvers/users.resolvers';
+import { IRequest } from './interfaces/IRequest';
 import express from 'express';
+import dotenv from 'dotenv';
 import http from 'http';
 import path from 'path';
-import { avocadoResolvers } from './graphql/resolvers/avocado.resolvers';
+
+dotenv.config({ path: '../.env' });
 
 const typeDefs = readFileSync(
-  path.join(__dirname, 'graphql/schema.gql'),
+  path.join(__dirname, './graphql/schema.gql'),
   'utf8'
 );
 
@@ -17,10 +22,12 @@ async function startApolloServer() {
 
   const server = new ApolloServer({
     typeDefs,
-    resolvers: [avocadoResolvers],
+    resolvers: [avocadoResolvers, usersResolvers],
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     context: ({ req }) => {
-      const token = req.headers.authorization || '';
+      const request: IRequest = req;
+      const token = request.headers.authorization || '';
+
       return { token };
     },
   });
@@ -32,10 +39,11 @@ async function startApolloServer() {
   });
 
   await new Promise<void>((resolve) =>
-    httpServer.listen({ port: 4000 }, resolve)
+    httpServer.listen({ port: process.env.PORT }, resolve)
   );
+
   console.log(
-    ` 🚀 Server ready at http://localhost:4000${server.graphqlPath} 🚀`
+    ` 🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath} 🚀`
   );
 }
 

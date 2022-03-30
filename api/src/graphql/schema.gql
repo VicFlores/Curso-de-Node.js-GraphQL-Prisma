@@ -1,34 +1,42 @@
+scalar DateTime
+
 type Query {
-  avos: [Avocado]!
-  avo(id: ID!): Avocado
+  avos(skip: Int, limit: Int): [Avocado]!
+  avo(_id: ID!): Avocado
+  findAllUsers: [Users]
+  findOneUser(_id: ID!): Users
+  LoginUser(input: LoginUser!): Token
 }
 
 type Mutation {
-  createAvo(data: AvoCreateInput!): Avocado!
+  createAvo(data: AvoCreateInput!): String!
+  addUser(input: UserInput!): String!
+  updateUser(_id: ID!, input: UpdateUserInput!): String!
+  deleteUser(_id: ID!): String!
 }
 
 """
 Avocados
 """
 interface BaseModel {
-  id: ID!
-  createdAt: String!
-  updatedAt: String
-  deletedAt: String
+  _id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
 }
 
 type Attributes {
-  description: String
-  shape: String
-  hardiness: String
-  taste: String
+  description: String!
+  shape: String!
+  hardiness: String!
+  taste: String!
 }
 
 type Avocado implements BaseModel {
-  id: ID!
-  createdAt: String!
-  updatedAt: String
-  deletedAt: String
+  _id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
 
   name: String!
   sku: String!
@@ -39,10 +47,44 @@ type Avocado implements BaseModel {
 
 input AvoCreateInput {
   name: String!
+  sku: String!
   price: Float!
   image: String!
-  description: String
-  shape: String
-  hardiness: String
-  taste: String
+  description: String!
+  shape: String!
+  hardiness: String!
+  taste: String!
+}
+
+"""
+Users
+"""
+type Users {
+  _id: ID
+  name: String
+  lastname: String
+  email: String
+  password: String
+}
+
+type Token {
+  token: String
+}
+
+input UserInput {
+  name: String!
+  lastname: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String!
+  lastname: String!
+  email: String!
+}
+
+input LoginUser {
+  email: String!
+  password: String!
 }
