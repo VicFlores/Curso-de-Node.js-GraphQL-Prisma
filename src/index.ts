@@ -30,6 +30,7 @@ async function startApolloServer() {
 
       return { token };
     },
+    introspection: true,
   });
 
   await server.start();
