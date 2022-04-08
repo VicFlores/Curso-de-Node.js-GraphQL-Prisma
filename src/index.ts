@@ -24,13 +24,13 @@ async function startApolloServer() {
     typeDefs,
     resolvers: [avocadoResolvers, usersResolvers],
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    introspection: true,
     context: ({ req }) => {
       const request: IRequest = req;
       const token = request.headers.authorization || '';
 
       return { token };
     },
-    introspection: true,
   });
 
   await server.start();
